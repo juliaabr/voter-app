@@ -1,0 +1,43 @@
+.dashboard {
+  width: 100%;
+  padding: 2em 0;
+}
+
+.dashboard__event-title,
+.dashboard__event-description,
+.dashboard__event-score {
+  width: 75%;
+  margin: 1em auto;
+  text-align: center;
+}
+.dashboard-score {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+}
+
+.dashboard-score__box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dashboard-score__scoreboard-item {
+  margin: 0 10px;
+  font-size: 2em;
+}
+@media only screen and (max-width: 550px) {
+  .dashboard {
+    padding: 0;
+  }
+
+  .dashboard__event-title h2 {
+    font-size: 1.5rem;
+  }
+
+  .dashboard__event-description p {
+    font-size: 0.8rem;
+  }
+}
