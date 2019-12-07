@@ -27,8 +27,15 @@ function App() {
       id: "03",
       name: "Alanas",
       datetime: "YYYY-MM-DD",
-      score: 1,
+      score: -1,
       text: "komentaras kaip vertina Alanas"
+    },
+    {
+      id: "04",
+      name: "Matas",
+      datetime: "YYYY-MM-DD",
+      score: 1,
+      text: "komentaras kaip vertina Matas"
     }
   ];
   const eventId = "WUWz6xmSzbk";
@@ -51,7 +58,7 @@ function App() {
           </div>{" "}
           <div className="sub-section">
             <PageBox>
-              <Dashboard />
+              <Dashboard feedbackList={feedbackList} />
             </PageBox>
           </div>
         </div>
