@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FeedbackList from "./components/FeedbackList";
 import VideoStream from "./components/VideoStream";
 import PageBox from "./layout/PageBox";
@@ -6,11 +6,12 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Dashboard from "./components/Dashboard";
 import PageControls from "./components/PageControls";
 import AddFeedbackForm from "./components/AddFeedbackForm";
+import * as feedbackStorage from "./service/feedbackStorage";
 
 import "./App.css";
 
 function App() {
-  const feedbackList = [
+  /*const feedbackList = [
     {
       id: "01",
       name: "Jonas",
@@ -39,10 +40,42 @@ function App() {
       score: 1,
       text: "komentaras kaip vertina Matas"
     }
-  ];
-  const eventId = "WUWz6xmSzbk";
+ ];*/
+  const DEFAULT_EVENT_ID = "WUWz6xmSzbk";
+  //const eventId = "WUWz6xmSzbk";
 
+  const [feedbackList, setFeedbackList] = useState([]);
   const [feedbackFormVisible, setFeedbackFormVisible] = useState(false);
+
+  const [eventId, setEventId] = useState(DEFAULT_EVENT_ID);
+
+  useEffect(() => {
+    feedbackStorage.initialize();
+    const pathEventId = window.location.pathname.replace("/", "");
+    if (pathEventId) {
+      setEventId(pathEventId);
+    }
+  }, []);
+
+  useEffect(() => {
+    feedbackStorage.listenForListChanges(eventId, newList =>
+      setFeedbackList(newList)
+    );
+  }, [eventId]);
+
+  function addFeedback(feedbackInput) {
+    const now = new Date();
+    const newEntry = {
+      id: Math.random(),
+      name: feedbackInput.name,
+      datetime: now.toUTCString(),
+      score: feedbackInput.score,
+      text: feedbackInput.text
+    };
+    setFeedbackList(prevFeedbackList => [newEntry, ...prevFeedbackList]);
+    hideFeedbackForm();
+  }
+
   function hideFeedbackForm() {
     setFeedbackFormVisible(false);
   }
@@ -75,7 +108,9 @@ function App() {
         </div>
       </div>
       <PageControls buttonAction={showFeedbackForm} />
-      {feedbackFormVisible && <AddFeedbackForm onCancel={hideFeedbackForm} />}
+      {feedbackFormVisible && (
+        <AddFeedbackForm onCancel={hideFeedbackForm} onSubmit={addFeedback} />
+      )}
     </>
   );
 }

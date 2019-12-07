@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -9,12 +9,23 @@ import ThumbDownIcon from "@material-ui/icons/ThumbDown";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
+const NAME_STORAGE_KEY = "author_name";
+
 export default function AddFeedbackForm({
   onCancel,
   onSubmit,
   initialValues = {}
 }) {
   const [score, setScore] = useState(initialValues.score);
+  const [name, setName] = useState(initialValues.name || "");
+  const [text, setText] = useState(initialValues.text || "");
+
+  useEffect(() => {
+    const name = localStorage.getItem(NAME_STORAGE_KEY);
+    if (name) {
+      setName(name);
+    }
+  }, [setName]);
 
   function handleLikeClick() {
     setScore(1);
@@ -24,8 +35,28 @@ export default function AddFeedbackForm({
     setScore(-1);
   }
 
+  function onNameChange(event) {
+    setName(event.target.value);
+  }
+
+  function onTextChange(event) {
+    setText(event.target.value);
+  }
+
   const likeClicked = score && score > 0;
   const dislikeClicked = score && score < 0;
+
+  function handleFormSubmit() {
+    const DEFAULT_NAME = "Anonymous";
+    onSubmit({
+      score,
+      name: name || DEFAULT_NAME,
+      text
+    });
+    if (name) {
+      localStorage.setItem(NAME_STORAGE_KEY, name);
+    }
+  }
 
   return (
     <Dialog
@@ -53,7 +84,13 @@ export default function AddFeedbackForm({
             <ThumbDownIcon />
           </IconButton>
         </div>
-        <TextField label="Name" fullWidth margin="normal" />
+        <TextField
+          label="Name"
+          fullWidth
+          margin="normal"
+          value={name}
+          onChange={onNameChange}
+        />
         <TextField
           label="Your comments"
           placeholder="Can add multiline text here"
@@ -61,12 +98,20 @@ export default function AddFeedbackForm({
           fullWidth
           margin="normal"
           helperText="comments are optional"
+          value={text}
+          onChange={onTextChange}
         />
       </DialogContent>
       <DialogActions>
-        *** Valdymo mygtukai ***
-        <Button color="default">Cancel</Button>
-        <Button color="primary" variant="contained">
+        <Button color="default" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button
+          color="primary"
+          onClick={handleFormSubmit}
+          disabled={score == null}
+          variant="contained"
+        >
           Submit
         </Button>
       </DialogActions>
